@@ -10,3 +10,8 @@ Steps:
 4. Add a graphical interface
 5. Write up project report
 6. Slides
+
+AI Algorithms:
+Minimax w/ AlphaBeta Pruning
+Monte Carlo Tree Search
+Reinforcement Learning 
