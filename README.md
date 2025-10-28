@@ -14,4 +14,5 @@ Steps:
 AI Algorithms:
 - Minimax w/ AlphaBeta Pruning
 - Monte Carlo Tree Search
-- Reinforcement Learning 
+- Reinforcement Learning
+- Simple Heuristic Search
