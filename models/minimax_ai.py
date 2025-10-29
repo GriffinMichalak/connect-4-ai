@@ -3,7 +3,7 @@ Minimax AI with Alpha-Beta Pruning for Connect 4 Game
 This module implements the MinimaxAI class with alpha-beta pruning optimization
 """
 
-from base_ai import Connect4AI
+from .base_ai import Connect4AI
 
 class MinimaxAI(Connect4AI):
     """Minimax AI with Alpha-Beta pruning for Connect 4"""

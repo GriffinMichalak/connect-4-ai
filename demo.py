@@ -3,7 +3,7 @@ Demo script for Connect 4 game with different AI configurations
 """
 
 from connect4 import Connect4Game
-from simple_ais import RandomAI
+from models import RandomAI
 
 def human_vs_human():
     """Two human players"""

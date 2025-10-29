@@ -3,7 +3,7 @@ Heuristic-based AI for Connect 4 Game
 This module implements the HeuristicAI class using simple heuristic evaluation
 """
 
-from base_ai import Connect4AI
+from .base_ai import Connect4AI
 
 class HeuristicAI(Connect4AI):
     """Simple Heuristic-based AI for Connect 4"""

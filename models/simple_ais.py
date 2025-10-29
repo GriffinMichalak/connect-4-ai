@@ -4,7 +4,7 @@ This module provides basic AI players like RandomAI and HumanPlayer
 """
 
 import numpy as np
-from base_ai import Connect4AI
+from .base_ai import Connect4AI
 
 class RandomAI(Connect4AI):
     """Simple random AI that makes random valid moves"""

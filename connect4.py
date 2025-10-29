@@ -1,12 +1,7 @@
 import pygame
 import sys
 import numpy as np
-from base_ai import Connect4AI
-from simple_ais import RandomAI, HumanPlayer
-from minimax_ai import MinimaxAI
-from mcts_ai import MCTSAI
-from rl_ai import ReinforcementLearningAI
-from heuristic_ai import HeuristicAI
+from models import Connect4AI, RandomAI, HumanPlayer, MinimaxAI, MCTSAI, ReinforcementLearningAI, HeuristicAI
 
 pygame.init()
 
