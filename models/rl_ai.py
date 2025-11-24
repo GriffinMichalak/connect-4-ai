@@ -51,7 +51,7 @@ class ReinforcementLearningAI(Connect4AI):
     def get_move(self, board):
         """
         When playing in demo mode:
-        - NNo exploration (epsilon ignored)
+        - No exploration (epsilon ignored)
         - Always pick best known move
         - If unseen state -> random valid column
         """
@@ -66,3 +66,22 @@ class ReinforcementLearningAI(Connect4AI):
         q_values = self.q_table[state]
         best_move = max(valid_moves, key=lambda a: q_values.get(a, 0.0))
         return best_move
+    
+    def encode_state(self, board):
+        enc = []
+        for value in board.flatten():
+            if value == 0:
+                enc.append(0)
+            elif value == self.player_id:
+                enc.append(1)
+            else:
+                enc.append(-1)
+        return tuple(enc)
+
+    def save_q_table(self, path: str):
+        with open(path, "wb") as f:
+            pickle.dump(self.q_table, f)
+
+    def load_q_table(self, path: str):
+        with open(path, "rb") as f:
+            self.q_table = pickle.load(f)

@@ -34,9 +34,7 @@ def human_vs_ai():
         print("Not yet implemented")
         exit()
     elif choice == "3":
-        # ai_player = ReinforcementLearningAI(player_id=2)
-        print("Not yet implemented")
-        exit()
+        ai_player = ReinforcementLearningAI(player_id=2)
     elif choice == "4":
         ai_player = HeuristicAI(player_id=2)
     elif choice == "5":
