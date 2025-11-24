@@ -17,6 +17,13 @@ AI Algorithms:
 - Simple Heuristic Search
 
 ## Useful Commands
+
+Running Program
+```sh
+.venv/bin/python demo.py # if your environment name is .venv
+```
+
+Deleting pyc files
 ```sh
 find . -name "*.pyc" -delete
 ```
