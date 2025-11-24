@@ -3,7 +3,7 @@ Demo script for Connect 4 game with different AI configurations
 """
 
 from connect4 import Connect4Game
-from models import RandomAI
+from models import HeuristicAI, MinimaxAI, RandomAI, ReinforcementLearningAI, mcts_ai
 
 def human_vs_human():
     """Two human players"""
@@ -13,8 +13,38 @@ def human_vs_human():
 
 def human_vs_ai():
     """Human vs Random AI"""
+    print("=======================================")
+    print("We have several AI models. Please select one (1-5): ")
+    print("=======================================")
+    print("1. Minimax w/ AlphaBeta Pruning")
+    print("2. Monte Carlo Tree Search")
+    print("3. Reinforcement Learning")
+    print("4. Simple Heuristic Search")
+    print("5. Exit")
+    choice = input("\nYour choice (1-5): ").strip()
+
+    ai_player = None
+    
+    if choice == "1":
+        # ai_player = MinimaxAI(player_id=2)
+        print("Not yet implemented")
+        exit()
+    elif choice == "2":
+        # ai_player = mcts_ai(player_id=2)
+        print("Not yet implemented")
+        exit()
+    elif choice == "3":
+        # ai_player = ReinforcementLearningAI(player_id=2)
+        print("Not yet implemented")
+        exit()
+    elif choice == "4":
+        ai_player = HeuristicAI(player_id=2)
+    elif choice == "5":
+        print("Goodbye!")
+    else:
+        print("Invalid choice. Please select 1-5.")
+    
     print("Starting Human vs AI game...")
-    ai_player = RandomAI(player_id=2)
     game = Connect4Game(player2_ai=ai_player)
     game.run()
 
@@ -28,8 +58,9 @@ def ai_vs_ai():
 
 def main():
     """Main demo function"""
+    print("=======================================")
     print("Connect 4 Demo")
-    print("=============")
+    print("=======================================")
     print("1. Human vs Human")
     print("2. Human vs AI")
     print("3. AI vs AI")

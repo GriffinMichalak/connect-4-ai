@@ -88,7 +88,7 @@ class Connect4Game:
                     self.board[row+3][col] == self.current_player):
                     return True
         
-        # Check diagonal (top-left to bottom-right)
+        # Check diagonal (top left to bottom right)
         for row in range(BOARD_HEIGHT - 3):
             for col in range(BOARD_WIDTH - 3):
                 if (self.board[row][col] == self.current_player and
@@ -97,7 +97,7 @@ class Connect4Game:
                     self.board[row+3][col+3] == self.current_player):
                     return True
         
-        # Check diagonal (top-right to bottom-left)
+        # Check diagonal (top right to bottom left)
         for row in range(BOARD_HEIGHT - 3):
             for col in range(3, BOARD_WIDTH):
                 if (self.board[row][col] == self.current_player and
