@@ -26,15 +26,15 @@ class ReinforcementLearningAI(Connect4AI):
             player_id: int,
             training: bool = False,
             alpha: float = 0.3, 
-            gamma: float = 0.95,
+            gamma: float = 0.98,
             epsilon: float = 1.0,
-            epsilon_decay: float = 0.999999,
+            epsilon_decay: float = 0.999997,
             epsilon_min: float = 0.05,
             q_table_path: Optional[str] = None
         ):
         super().__init__(player_id)
 
-        # Q-table: state (flattened tuple) -> {actiin: Q-value}
+        # Q-table: state (flattened tuple) -> {action: Q-value}
         self.q_table: Dict[Tuple[int, ...], Dict[int, float]] = {}
 
         self.training = training
@@ -69,7 +69,7 @@ class ReinforcementLearningAI(Connect4AI):
         best_move = max(valid_moves, key=lambda a: q_values.get(a, 0.0))
         return best_move
     
-    def train(self, num_games: int = 10000):
+    def train(self, num_games: int = 100000, mode: str = "random"):
         """
         RL training loop. Plays num_games against random moves.
         """ 
