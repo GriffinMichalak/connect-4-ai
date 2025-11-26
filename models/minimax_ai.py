@@ -1,13 +1,13 @@
 """
-Minimax AI with Alpha-Beta Pruning for Connect 4 Game
-This module implements the MinimaxAI class with alpha-beta pruning optimization
+Minimax AI without Alpha-Beta Pruning for Connect 4 Game
+This module implements the MinimaxAI class without alpha-beta pruning optimization
 """
 
 from .base_ai import Connect4AI
 from .heuristic_ai import HeuristicAI
 
 class MinimaxAI(Connect4AI):
-    """Minimax AI with Alpha-Beta pruning for Connect 4"""
+    """Minimax AI without Alpha-Beta pruning for Connect 4"""
     
     def __init__(self, player_id, depth=4):
         super().__init__(player_id)
