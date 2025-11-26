@@ -3,7 +3,7 @@ Demo script for Connect 4 game with different AI configurations
 """
 
 from connect4 import Connect4Game
-from models import HeuristicAI, MinimaxAI, RandomAI, ReinforcementLearningAI, mcts_ai
+from models import HeuristicAI, MinimaxAI, MinimaxABAI, RandomAI, ReinforcementLearningAI, mcts_ai
 
 def human_vs_human():
     """Two human players"""
@@ -12,34 +12,40 @@ def human_vs_human():
     game.run()
 
 def human_vs_ai():
-    """Human vs Random AI"""
-    print("Select 1-5: ")
-    print("1. Minimax w/ AlphaBeta Pruning")
-    print("2. Monte Carlo Tree Search")
-    print("3. Reinforcement Learning")
-    print("4. Simple Heuristic Search")
-    print("5. Exit")
-    choice = input("\nYour choice (1-5): ").strip()
+    """Human vs AI"""
+    print("Select 1-6: ")
+    print("1. Minimax (Basic)")
+    print("2. Minimax w/ Alpha-Beta Pruning")
+    print("3. Monte Carlo Tree Search")
+    print("4. Reinforcement Learning")
+    print("5. Simple Heuristic Search")
+    print("6. Exit")
+    choice = input("\nYour choice (1-6): ").strip()
 
     ai_player = None
     
     if choice == "1":
         ai_player = MinimaxAI(player_id=2)
-        print("Selected: Minimax AI with Alpha-Beta Pruning")
+        print("Selected: Basic Minimax AI")
     elif choice == "2":
+        ai_player = MinimaxABAI(player_id=2)
+        print("Selected: Minimax AI with Alpha-Beta Pruning")
+    elif choice == "3":
         # ai_player = mcts_ai(player_id=2)
         print("Not yet implemented")
         exit()
-    elif choice == "3":
+    elif choice == "4":
         # ai_player = ReinforcementLearningAI(player_id=2)
         print("Not yet implemented")
         exit()
-    elif choice == "4":
-        ai_player = HeuristicAI(player_id=2)
     elif choice == "5":
+        ai_player = HeuristicAI(player_id=2)
+    elif choice == "6":
         print("Goodbye!")
+        return
     else:
-        print("Invalid choice. Please select 1-5.")
+        print("Invalid choice. Please select 1-6.")
+        return
     
     print("Starting Human vs AI game...")
     game = Connect4Game(player2_ai=ai_player)
