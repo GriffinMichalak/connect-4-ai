@@ -2,6 +2,7 @@
 Demo script for Connect 4 game with different AI configurations
 """
 
+import os
 from connect4 import Connect4Game
 from models import HeuristicAI, MinimaxAI, MinimaxABAI, RandomAI, ReinforcementLearningAI, mcts_ai
 
@@ -58,6 +59,33 @@ def ai_vs_ai():
     ai_player2 = MinimaxAI(player_id=2)
     game = Connect4Game(player1_ai=ai_player1, player2_ai=ai_player2)
     game.run()
+
+def choose_qtable():
+    """
+    Scan for available trained Q-tables and let user select one. 
+    Needed for functionality with Reinforcement learning models.
+    """ 
+
+    folder = "qtables"
+
+    # Scan for qtable files in directory 
+    files = [f for f in os.listdir(folder) if f.endswith(".pkl")]
+
+    if not files:
+        print("\nNo saved RL models found in directory.")
+        print("Train one using train_rl.py\n")
+        return None
+    
+    print("\nAvailable Reinforcement Learning Models:")
+    print("==========================================")
+    for i, file in enumerate(files, start=1):
+        print(f"{i}. {file}")
+    
+    while True:
+        choice = input("\nSelect a model number: ").strip()
+        if choice.isdigit() and 1 <= int(choice) <= len(files):
+            return os.path.join(folder, files[int(choice) - 1])
+        print("Invalid choice. Please select a valid model number.")
 
 def main():
     """Main demo function"""
