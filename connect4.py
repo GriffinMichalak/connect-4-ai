@@ -22,9 +22,11 @@ GRAY = (128, 128, 128)
 LIGHT_BLUE = (173, 216, 230)
 
 class Connect4Game:
-    def __init__(self, player1_ai=None, player2_ai=None):
+    def __init__(self, player1_ai=None, player2_ai=None, screen_off=False, sim=False):
         self.board = np.zeros((BOARD_HEIGHT, BOARD_WIDTH), dtype=int)
         self.current_player = 1  # 1 for red, 2 for yellow
+        self.screen_off = screen_off # To turn off GUI
+        self.sim = sim # To run simulations
         self.game_over = False
         self.winner = None
         
@@ -33,12 +35,16 @@ class Connect4Game:
         self.player2_ai = player2_ai
         
         # Initialize display
-        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("Connect 4")
-        self.clock = pygame.time.Clock()
-        
-        # Font for text
-        self.font = pygame.font.Font(None, 36)
+        if not self.screen_off:
+            self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+            pygame.display.set_caption("Connect 4")
+            self.clock = pygame.time.Clock()
+            # Font for text
+            self.font = pygame.font.Font(None, 36)
+        else:
+            self.screen = None
+            self.clock = None
+            self.font = None
         
     def is_valid_move(self, col):
         """Check if a move is valid in the given column"""
@@ -226,42 +232,47 @@ class Connect4Game:
         """Main game loop"""
         running = True
         ai_move_timer = 0
-        ai_move_delay = 1000  # 1 second delay for AI moves
+        ai_move_delay = 0 if self.sim else 1000  # 1 second delay for AI moves. If simmed, no delay.
         
         while running:
             current_time = pygame.time.get_ticks()
-            
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:  # Left click
-                        self.handle_click(event.pos)
-                
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_r and self.game_over:
-                        self.reset_game()
-                        ai_move_timer = current_time  # Reset AI timer
-                    elif event.key == pygame.K_ESCAPE:
+            if not self.screen_off: # Skip polling of events if no screen
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
                         running = False
+                    
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:  # Left click
+                            self.handle_click(event.pos)
+                    
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_r and self.game_over:
+                            self.reset_game()
+                            ai_move_timer = current_time  # Reset AI timer
+                        elif event.key == pygame.K_ESCAPE:
+                            running = False
             
             # Handle AI moves
             if not self.game_over:
                 current_ai = self.get_current_ai()
-                if current_ai is not None and current_time - ai_move_timer > ai_move_delay:
-                    self.make_ai_move()
-                    ai_move_timer = current_time
+                if current_ai is not None:
+                    if self.sim or current_time - ai_move_timer > ai_move_delay:
+                        self.make_ai_move()
+                        ai_move_timer = current_time
+            else:
+                # Gave is over -> exit loop automatically in sim mode
+                if self.sim or self.screen_off:
+                    running = False
             
-            # Draw everything
-            self.draw_board()
-            self.draw_ui()
-            
-            pygame.display.flip()
-            self.clock.tick(60)
+            # Draw everything (as long as screen_off flag is False)
+            if not self.screen_off:
+                self.draw_board()
+                self.draw_ui()
+                pygame.display.flip()
+                self.clock.tick(60)
         
         pygame.quit()
-        sys.exit()
+        return self.winner # Needed for evaluations
 
 def main():
     """Main function to start the game"""

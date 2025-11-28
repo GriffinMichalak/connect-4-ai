@@ -9,7 +9,7 @@ def main():
         training=True
     )
 
-    ai.train(num_games=1000000)
+    ai.train(num_games=1000000, mode="random")
 
 if __name__ == "__main__":
     main()

@@ -28,7 +28,7 @@ class ReinforcementLearningAI(Connect4AI):
             alpha: float = 0.3, 
             gamma: float = 0.98,
             epsilon: float = 1.0,
-            epsilon_decay: float = 0.999997,
+            epsilon_decay: float = 0.99995,
             epsilon_min: float = 0.05,
             q_table_path: Optional[str] = None
         ):
@@ -70,10 +70,12 @@ class ReinforcementLearningAI(Connect4AI):
         return best_move
     
     def train(self, num_games: int = 100000, mode: str = "random"):
+        assert mode in {"random", "self"}, "Training mode must be random or self."
+        # Allow for multiple modes. Random or self-trained available for now.
         """
         RL training loop. Plays num_games against random moves.
         """ 
-        print(f"[TRAINING] Starting training for {num_games} games vs. random AI")
+        print(f"[TRAINING] Starting training for {num_games} games. | Mode = {mode}")
 
         wins = 0
         losses = 0
@@ -104,8 +106,23 @@ class ReinforcementLearningAI(Connect4AI):
                     last_action = action
                 
                 else:
-                    # Let opponent move (in this case randomly)
-                    opp_move = random.choice(valid_moves)
+                    # Let opponent move
+
+                    # Selected mode = random
+                    if mode == "random":
+                        opp_move = random.choice(valid_moves)
+
+                    # Selected mode = self
+                    elif mode == "self":
+                        # Flip the board state so AI can play as both players
+                        opp_state = self.encode_state(board, flip=True)
+                        if random.random() < self.epsilon or opp_state not in self.q_table:
+                            # Explore
+                            opp_move = random.choice(valid_moves)
+                        else:
+                            opp_move = max(valid_moves, key=lambda a: self.q_table[opp_state].get(a, 0.0))
+                    
+                    # Simulate move and get next board
                     next_board = self.simulate_move(board, opp_move)
                 
                 # Check whether move ended the game
@@ -122,7 +139,17 @@ class ReinforcementLearningAI(Connect4AI):
                 current = 2 if current == 1 else 1 # Next player's turn
             
             # Rewards
-            if last_state is not None:
+            # if last_state is not None:
+            #     # Base win/loss/draw rewards
+            #     if winner == self.player_id: # Win
+            #         rewards += 10
+            #     elif winner not in (self.player_id, None, 0): # Loss
+            #         reward -= 10
+            #     elif winner == 0:
+            #         rewards += 1 # Draw
+                
+                # Heuristic shaping scores to have rewards 
+
                 reward = (
                     +1 if winner == self.player_id else                 # +1 if win
                     -1 if winner not in (self.player_id, None, 0) else  # -1 if lose
@@ -138,7 +165,7 @@ class ReinforcementLearningAI(Connect4AI):
             if (game + 1) % max(1, num_games // 10) == 0:
                 print(f"[{game + 1}/{num_games}] ε={self.epsilon:.3f}")
             
-        filename = f"qtables/qtable_random_{num_games}.pkl"
+        filename = f"qtables/qtable_{mode}_{num_games}.pkl"
         print(f"\n[TRAINING COMPLETE] Saving model → {filename}")
         self.save_q_table(filename)
     
@@ -158,21 +185,30 @@ class ReinforcementLearningAI(Connect4AI):
         self.q_table[state][action] = new_q
 
 
-    def encode_state(self, board):
+    # Flip flag allows us to "flip" the board state to see it from the other point of view,
+    # helpful for self-training
+    def encode_state(self, board, flip=False):
+        # The "point of view" the AI will interpret the board in
+        if flip:
+            pov = 3 - self.player_id
+        else:
+            pov = self.player_id
         enc = []
         for value in board.flatten():
             if value == 0:
                 enc.append(0)
-            elif value == self.player_id:
+            elif value == pov:
                 enc.append(1)
             else:
                 enc.append(-1)
         return tuple(enc)
 
+    # To save a q table to a given path
     def save_q_table(self, path: str):
         with open(path, "wb") as f:
             pickle.dump(self.q_table, f)
 
+    # To load a q table from a given path
     def load_q_table(self, path: str):
         with open(path, "rb") as f:
             self.q_table = pickle.load(f)
