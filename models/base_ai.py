@@ -78,7 +78,7 @@ class Connect4AI(ABC):
         
         return False
 
-    def simulate_move(self, board, move_col):
+    def simulate_move(self, board, move_col, player_id):
         """Returns what `board` would look like if we made the given `move`"""
         new_board = board.copy()
             
@@ -86,7 +86,7 @@ class Connect4AI(ABC):
         board_height = new_board.shape[0]
         for row in range(board_height - 1, -1, -1):
             if new_board[row][move_col] == 0:
-                new_board[row][move_col] = self.player_id
+                new_board[row][move_col] = player_id
                 break
         
         return new_board
