@@ -4,7 +4,8 @@ Demo script for Connect 4 game with different AI configurations
 
 import os
 from connect4 import Connect4Game
-from models import HeuristicAI, MinimaxAI, RandomAI, ReinforcementLearningAI, mcts_ai
+from models import HeuristicAI, MinimaxAI, RandomAI, ReinforcementLearningAI, mcts_ai, rl_cnn_ai
+from models.rl_cnn_ai import CNNRLAI
 
 def human_vs_human():
     """Two human players"""
@@ -36,14 +37,15 @@ def human_vs_ai():
         exit()
     elif choice == "3":
         print("\nYou selected Reinforcement Learning model.")
-        filename = choose_qtable()
+        filename = choose_cnn_model()
 
         if filename is None:
             print("\nReturning to menu\n")
             return
         
         print(f"\nLoading model: {filename}")
-        ai_player = ReinforcementLearningAI(player_id=2, q_table_path=filename)
+        ai_player = CNNRLAI(player_id=2)
+        ai_player.load_model(filename)
     elif choice == "4":
         ai_player = HeuristicAI(player_id=2)
     elif choice == "5":
@@ -63,32 +65,27 @@ def ai_vs_ai():
     game = Connect4Game(player1_ai=ai_player1, player2_ai=ai_player2)
     game.run()
 
-def choose_qtable():
-    """
-    Scan for available trained Q-tables and let user select one. 
-    Needed for functionality with Reinforcement learning models.
-    """ 
+def choose_cnn_model():
+    """Select a CNN RL model from CNN_models folder"""
+    folder = "CNN_models"
 
-    folder = "qtables"
-
-    # Scan for qtable files in directory 
-    files = [f for f in os.listdir(folder) if f.endswith(".pkl")]
+    files = [f for f in os.listdir(folder) if f.endswith(".pt")]
 
     if not files:
-        print("\nNo saved RL models found in directory.")
-        print("Train one using train_rl.py\n")
+        print("\nNo CNN RL model files found.")
+        print("Train a CNN model and save with .pt extension.")
         return None
     
-    print("\nAvailable Reinforcement Learning Models:")
-    print("==========================================")
+    print("\nAvailable CNN RL Models:")
+    print("===================================")
     for i, file in enumerate(files, start=1):
         print(f"{i}. {file}")
-    
+
     while True:
         choice = input("\nSelect a model number: ").strip()
         if choice.isdigit() and 1 <= int(choice) <= len(files):
             return os.path.join(folder, files[int(choice) - 1])
-        print("Invalid choice. Please select a valid model number.")
+        print("Invalid choice.")
 
 def main():
     """Main demo function"""

@@ -20,7 +20,7 @@ class HeuristicAI(Connect4AI):
 
         for move in valid_moves:
             # 1. simulate placing the piece & get what-if score
-            temp_board = self.simulate_move(board, move)
+            temp_board = self.simulate_move(board, move, self.player_id)
             score = self.heuristic_score(temp_board)
             # 2. set current best move
             if score > best_score:
