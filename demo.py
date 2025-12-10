@@ -4,7 +4,7 @@ Demo script for Connect 4 game with different AI configurations
 
 import os
 from connect4 import Connect4Game
-from models import HeuristicAI, MinimaxAI, MinimaxABAI, RandomAI, MCTSAI, rl_cnn_ai
+from models import HeuristicAI, MinimaxAI, MinimaxABAI, RandomAI, MCTSAI
 from models.rl_cnn_ai import CNNRLAI
 
 def human_vs_human():
@@ -99,19 +99,25 @@ def main():
     print("2. Human vs AI")
     print("3. AI vs AI")
     print("4. Exit")
+
+    running = True
     
-    while True:
+    while running:
         try:
             choice = input("\nSelect game mode (1-4): ").strip()
             
             if choice == "1":
                 human_vs_human()
+                running = False
             elif choice == "2":
                 human_vs_ai()
+                running = False
             elif choice == "3":
                 ai_vs_ai()
+                running = False
             elif choice == "4":
                 print("Goodbye!")
+                running = False
                 break
             else:
                 print("Invalid choice. Please select 1-4.")
