@@ -9,7 +9,7 @@ from .heuristic_ai import HeuristicAI
 class MinimaxABAI(Connect4AI):
     """Minimax AI with Alpha-Beta pruning for Connect 4"""
     
-    def __init__(self, player_id, depth=7):
+    def __init__(self, player_id, depth=4):
         super().__init__(player_id)
         self.depth = depth
         self.opponent_id = 2 if player_id == 1 else 1
