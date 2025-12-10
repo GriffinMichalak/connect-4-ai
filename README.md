@@ -1,9 +1,9 @@
 # Connect 4 AI Agents
 
-Connect-4 is a two-player board game in which players take turns placing chips into a 7 row × 6 column board until a player wins. Wins occur when a player has aligned four consecutive pieces vertically, horizontally, or diagonally. By utilizing Heuristics, Minimax, Q-learning, and Monte Carlo Tree Search, we aim to build and evaluate four models that consistently outperform human players.
+Connect-4 is a two-player board game in which players take turns placing chips into a 7 row × 6 column board until a player wins. Wins occur when a player has aligned four consecutive pieces vertically, horizontally, or diagonally. By utilizing Heuristics, Minimax, Q-learning, and Monte Carlo Tree Search, we aim to build and evaluate four models that consistently outperform human players
 
 ## 🎯 Project Overview
-This project implements and compares various AI algorithms to play the populate board game Connect 4. Here, we provide a platform to understand the pros adn cons of different AI models to solve the game. To demonstrate our models, we built a Graphical UI with Python's Pygame. We support the following three modes: human vs human, human vs AI, and AI vs AI.
+This project implements and compares various AI algorithms to play the populate board game Connect 4. Here, we provide a platform to understand the pros adn cons of different AI models to solve the game. To demonstrate our models, we built a Graphical UI with Python's Pygame. We support the following three modes: human vs human, human vs AI, and AI vs AI
 
 ## ✨ Features
 
@@ -16,13 +16,13 @@ This project implements and compares various AI algorithms to play the populate 
 ## 🤖 Models
 
 ### 1. **Minimax Algorithm**
-A classical game-theoretic approach that examines the game tree to identify optimal moves. Uses depth-limited search combined with evaluation functions.
+A classical game-theoretic approach that examines the game tree to identify optimal moves. Uses depth-limited search combined with evaluation functions
 
 ### 2. **Minimax with Alpha-Beta Pruning**
-Optimized version of Minimax that reduces the number of nodes evaluated by pruning branches that cannot affect the final decision.
+Optimized version of Minimax that reduces the number of nodes evaluated by pruning branches that cannot affect the final decision
 
 ### 3. **Monte Carlo Tree Search (MCTS)**
-Probabilistic algorithm that uses random simulations to evaluate moves, balancing exploration and exploitation.
+Probabilistic algorithm that uses random simulations to evaluate moves, balancing exploration and exploitation
 
 ### 4. **Heuristic Model**
 
@@ -41,7 +41,7 @@ Deep learning approach using Convolutional Neural Networks trained through reinf
 
 ### 6. **Random AI**
 
-Baseline opponent that makes random valid moves for comparison purposes.
+Baseline opponent that makes random valid moves for comparison purposes
 
 ## 📋 Requirements (Specified in `requirements.txt`)
 - Python 3.7+
@@ -108,7 +108,7 @@ To train your own RL models:
 python train_rl.py
 ```
 
-Trained models will be saved in the `CNN_models/` directory.
+Trained models will be saved in the `CNN_models/` directory
 
 ### Evaluating AI Performance
 Use the evaluation scripts to analyze AI performance:
