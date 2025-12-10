@@ -13,7 +13,8 @@ def human_vs_human():
 
 def human_vs_ai():
     """Human vs AI"""
-    print("Select 1-6: ")
+    print("Select 0-6: ")
+    print("0. Random Selection")
     print("1. Minimax (Basic)")
     print("2. Minimax w/ Alpha-Beta Pruning")
     print("3. Monte Carlo Tree Search")
@@ -24,7 +25,10 @@ def human_vs_ai():
 
     ai_player = None
     
-    if choice == "1":
+    if choice == "0":
+        ai_player = RandomAI(player_id=2)
+        print("Selected: Random Selection 'AI'")
+    elif choice == "1":
         ai_player = MinimaxAI(player_id=2)
         print("Selected: Basic Minimax AI")
     elif choice == "2":
