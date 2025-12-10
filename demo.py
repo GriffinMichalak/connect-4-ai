@@ -4,7 +4,7 @@ Demo script for Connect 4 game with different AI configurations
 
 import os
 from connect4 import Connect4Game
-from models import HeuristicAI, MinimaxAI, RandomAI, mcts_ai, rl_cnn_ai
+from models import HeuristicAI, MinimaxAI, MinimaxABAI, RandomAI, mcts_ai, rl_cnn_ai
 from models.rl_cnn_ai import CNNRLAI
 
 def human_vs_human():
@@ -14,27 +14,28 @@ def human_vs_human():
     game.run()
 
 def human_vs_ai():
-    """Human vs Random AI"""
-    print("=======================================")
-    print("We have several AI models. Please select one (1-5): ")
-    print("=======================================")
-    print("1. Minimax w/ AlphaBeta Pruning")
-    print("2. Monte Carlo Tree Search")
+    """Human vs AI"""
+    print("Select 0-6: ")
+    print("0. Random Selection")
+    print("1. Minimax (Basic)")
+    print("2. Minimax w/ Alpha-Beta Pruning")
     print("3. Reinforcement Learning")
     print("4. Simple Heuristic Search")
-    print("5. Exit")
-    choice = input("\nYour choice (1-5): ").strip()
+    print("5. Monte Carlo Tree Search")
+    print("6. Exit")
+    choice = input("\nYour choice (1-6): ").strip()
 
     ai_player = None
     
-    if choice == "1":
-        # ai_player = MinimaxAI(player_id=2)
-        print("Not yet implemented")
-        exit()
+    if choice == "0":
+        ai_player = RandomAI(player_id=2)
+        print("Selected: Random Selection 'AI'")
+    elif choice == "1":
+        ai_player = MinimaxAI(player_id=2)
+        print("Selected: Basic Minimax AI")
     elif choice == "2":
-        # ai_player = mcts_ai(player_id=2)
-        print("Not yet implemented")
-        exit()
+        ai_player = MinimaxABAI(player_id=2)
+        print("Selected: Minimax AI with Alpha-Beta Pruning")
     elif choice == "3":
         print("\nYou selected Reinforcement Learning model.")
         filename = choose_cnn_model()
@@ -49,9 +50,13 @@ def human_vs_ai():
     elif choice == "4":
         ai_player = HeuristicAI(player_id=2)
     elif choice == "5":
+        ai_player = MCTS_AI(player_id=2)
+    elif choice == "6":
         print("Goodbye!")
+        return
     else:
-        print("Invalid choice. Please select 1-5.")
+        print("Invalid choice. Please select 1-6.")
+        return
     
     print("Starting Human vs AI game...")
     game = Connect4Game(player2_ai=ai_player)
@@ -60,8 +65,8 @@ def human_vs_ai():
 def ai_vs_ai():
     """Two AI players"""
     print("Starting AI vs AI game...")
-    ai_player1 = RandomAI(player_id=1)
-    ai_player2 = RandomAI(player_id=2)
+    ai_player1 = MinimaxAI(player_id=1)
+    ai_player2 = MinimaxAI(player_id=2)
     game = Connect4Game(player1_ai=ai_player1, player2_ai=ai_player2)
     game.run()
 
@@ -89,9 +94,7 @@ def choose_cnn_model():
 
 def main():
     """Main demo function"""
-    print("=======================================")
     print("Connect 4 Demo")
-    print("=======================================")
     print("1. Human vs Human")
     print("2. Human vs AI")
     print("3. AI vs AI")
