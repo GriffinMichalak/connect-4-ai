@@ -1,6 +1,5 @@
 """
 Minimax AI with Alpha-Beta Pruning for Connect 4 Game
-This module implements the MinimaxABAI class with alpha-beta pruning optimization
 """
 
 from .base_ai import Connect4AI
@@ -21,7 +20,7 @@ class MinimaxABAI(Connect4AI):
         valid_columns = self.get_valid_columns(board)
         
         if not valid_columns:
-            return 0  # Should not happen in valid game state
+            return 0 
         
         best_score = float('-inf')
         best_column = valid_columns[0]
@@ -58,7 +57,7 @@ class MinimaxABAI(Connect4AI):
                 new_board = self.simulate_move_for_player(board, col, self.player_id)
                 score = self.minimax_ab(new_board, depth - 1, False, alpha, beta)
                 max_score = max(max_score, score)
-                alpha = max(alpha, score)  # Update alpha
+                alpha = max(alpha, score) 
                 
                 # Alpha-beta pruning: if alpha >= beta, prune remaining branches
                 if alpha >= beta:
@@ -72,7 +71,7 @@ class MinimaxABAI(Connect4AI):
                 new_board = self.simulate_move_for_player(board, col, self.opponent_id)
                 score = self.minimax_ab(new_board, depth - 1, True, alpha, beta)
                 min_score = min(min_score, score)
-                beta = min(beta, score)  # Update beta
+                beta = min(beta, score)  
                 
                 # Alpha-beta pruning: if alpha >= beta, prune remaining branches
                 if alpha >= beta:
@@ -85,7 +84,7 @@ class MinimaxABAI(Connect4AI):
         new_board = board.copy()
         
         # Find the lowest empty row in the column
-        for row in range(5, -1, -1):  # Start from bottom row
+        for row in range(5, -1, -1):  
             if new_board[row][col] == 0:
                 new_board[row][col] = player
                 break
