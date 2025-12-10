@@ -9,12 +9,12 @@ from models.rl_ai import ReinforcementLearningAI
 from models.rl_cnn_ai import CNNRLAI
 from models.simple_ais import RandomAI
 
-def evaluate_model(model_path, num_games = 1000):
+def evaluate_model(model_path, num_games = 5000):
     """Evaluate a single RL model against the Random AI"""
     print(f"Evaluating model: {model_path} ({num_games} games)")
 
     rl = CNNRLAI(player_id=1)
-    rl.load_model(model_path) # load .pt weight file
+    rl.load_model(model_path)
     rl.epsilon = 0.0 # Disable exploration during evaluation
 
     random_ai = RandomAI(player_id=2)
@@ -39,9 +39,7 @@ def evaluate_model(model_path, num_games = 1000):
         else:
             draws += 1
 
-    # Winrate
     win_rate = wins / num_games * 100
-
     label = parse_model_name(os.path.basename(model_path))
 
     # Print results
@@ -54,29 +52,37 @@ def evaluate_model(model_path, num_games = 1000):
 
 def plot_results(results):
     """Bar chart comparing win rates for models"""
-
-    def extract_games(label):
-            try:
-                inside = label.split("(")[1].split(",")[0]  # "50k"
-                if inside.endswith("k"):
-                    return int(inside[:-1]) * 1000
-                return int(inside)
-            except:
-                return 0
-    
-    results = sorted(results, key=lambda x: extract_games(x[0]))
+    results = sorted(results, key=lambda x: x[1])
             
     model_names = [name for name, _ in results]
     win_rates = [rate for _, rate in results]
 
+    # Different colors for each bar
+    colors = plt.cm.tab20(range(len(results)))
+
     # Chart
-    plt.figure(figsize=(8, 6))
-    plt.bar(model_names, win_rates, color="blue")
-    plt.title("RL Model Win Rate Against Random AI")
-    plt.ylabel("Win Rate (%)")
-    plt.xlabel("Training Model")
+    plt.figure(figsize=(10, 5), dpi=200)
+    bars = plt.bar(model_names, win_rates, color=colors, width=0.5)
+    # Add win rate text on top of each bar
+    for bar, win in zip(bars, win_rates):
+        height = bar.get_height()
+        plt.text(
+            bar.get_x() + bar.get_width() / 2,
+            height + 0.5,
+            f"{win:.1f}%",
+            ha="center",
+            va="bottom",
+            fontsize=12,
+            fontweight="bold"
+        )
+    plt.title("RL Model Win Rate Against Random AI (5,000 games each)", fontsize=18, weight="bold")
+    plt.ylabel("Win Rate (%)", fontsize=14)
+    plt.xlabel("Training Model", fontsize=14)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.ylim(0, max(win_rates) + 5)
     plt.tight_layout()
-    plt.savefig("rl_evaluation_results1.png")
+    plt.savefig("rl_evaluation_results.png")
 
 def parse_model_name(filename):
     """
@@ -86,17 +92,13 @@ def parse_model_name(filename):
     base = filename.replace(".pt", "")
     parts = base.split("_")
     
-    if len(parts) == 4 and parts[0] == "cnn":
-        opponent = parts[1]
-        try:
-            games = int(parts[2])
-            games_label = f"{games // 1000}k"
-        except:
-            games_label = parts[2]
-        epsilon_decay = parts[3]
-        return f"{opponent} ({games_label}, eps={epsilon_decay})"
+    if len(parts) == 4 and parts[0] == "cnnrl":
+        mode = parts[1]
+        games = parts[2]
+        eps = parts[3]
+        return f"{mode} ({games}, eps={eps})"
 
-    return base
+    return base  # Fallback if format is unexpected
 
 def main():
     folder = "CNN_models"

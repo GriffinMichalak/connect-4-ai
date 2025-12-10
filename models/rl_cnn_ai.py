@@ -6,7 +6,8 @@ import numpy as np
 from typing import List, Tuple, Optional
 from collections import deque
 from .base_ai import Connect4AI
-from models import HeuristicAI, MCTSAI, MinimaxAI
+from models import HeuristicAI
+from models.minimax_ab_ai import MinimaxABAI
 
 class Connect4CNN(nn.Module):
     """
@@ -26,7 +27,7 @@ class Connect4CNN(nn.Module):
 
     def forward(self, x):
         """
-        Foprward pass through the network.
+        Forward pass through the network.
         """
         # x shape: (batch_size, 2, 6, 7)
         x = torch.relu(self.conv1(x))
@@ -73,6 +74,7 @@ class CNNRLAI(Connect4AI):
 
         # Other models
         self.heuristic_opponent = HeuristicAI(player_id=3 - self.player_id)
+        self.minimax_opponent = MinimaxABAI(player_id=3 - self.player_id, depth=5)
 
         # Device configuration
         if device is None:
@@ -83,11 +85,6 @@ class CNNRLAI(Connect4AI):
         # Policy and target networks
         self.policy_network = Connect4CNN().to(self.device)
         self.target_network = Connect4CNN().to(self.device)
-
-        # FP16 for efficiency
-        if self.device == "cuda":
-            self.policy_network = self.policy_network.half()
-            self.target_network = self.target_network.half()
 
         self.target_network.load_state_dict(self.policy_network.state_dict())
         self.target_network.eval() # Target network in eval mode
@@ -208,7 +205,7 @@ class CNNRLAI(Connect4AI):
     def local_reward(self, prev_board: np.ndarray, next_board: np.ndarray, col: int, row: int) -> float:
         """
         Reward shaping for a single move:
-        - Centrer column preference
+        - Center column preference
         - Creating of lines/pieces in a row
         - Blocking opponent's immediate win
         """
@@ -252,7 +249,7 @@ class CNNRLAI(Connect4AI):
             return random.choice(valid_moves)
         
         # Exploit
-        state_tensor = self.encode_board(board).unsqueeze(0).to(self.device).half()  # (1, 2, 6, 7)
+        state_tensor = self.encode_board(board).unsqueeze(0).to(self.device)  # (1, 2, 6, 7)
         with torch.inference_mode():
             q_values = self.policy_network(state_tensor)[0].cpu().numpy()
         
@@ -273,7 +270,9 @@ class CNNRLAI(Connect4AI):
             return random.choice(valid_moves)
 
         # Encode from opponent POV
-        state_tensor = self.encode_board(board, pov_player=opp_id).unsqueeze(0).to(self.device).half()
+        state_np = self.encode_board_np(board)
+        opp_state_np = self.invert_pov(state_np)
+        state_tensor = torch.tensor(opp_state_np, dtype=torch.float32).unsqueeze(0).to(self.device)
 
         with torch.inference_mode():
             q_values = self.policy_network(state_tensor)[0].cpu().numpy()
@@ -323,8 +322,8 @@ class CNNRLAI(Connect4AI):
         # Build valid action masks for next states
         next_valid_mask_np = self.valid_mask_from_states(next_states_np) # (batch_size, 7)
 
-        states = torch.from_numpy(states_np).float().to(self.device).half() # (batch_size, 2, 6, 7)
-        next_states = torch.from_numpy(next_states_np).float().to(self.device).half() # (batch_size, 2, 6, 7)
+        states = torch.from_numpy(states_np).float().to(self.device) # (batch_size, 2, 6, 7)
+        next_states = torch.from_numpy(next_states_np).float().to(self.device) # (batch_size, 2, 6, 7)
         next_valid_mask = torch.from_numpy(next_valid_mask_np).float().to(self.device) # (batch_size, 7)
 
         actions = torch.tensor(actions, dtype=torch.long, device=self.device) # (batch_size, )
@@ -370,12 +369,18 @@ class CNNRLAI(Connect4AI):
         """
         valid_moves = self.get_valid_moves(board)
 
-        state_tensor = self.encode_board(board).unsqueeze(0).to(self.device).half()
+        state_tensor = self.encode_board(board).unsqueeze(0).to(self.device)
         with torch.inference_mode():
             q_values = self.policy_network(state_tensor)[0].cpu().numpy()
         
         best_move = max(valid_moves, key=lambda col: q_values[col])
         return best_move
+    
+    def invert_pov(self, state_np: np.ndarray) -> np.ndarray:
+        """
+        Invert the point of view of the state numpy array.
+        """
+        return np.stack([state_np[1], state_np[0]], axis=0)
     
     def train(self,
               num_games: int = 10000,
@@ -417,7 +422,7 @@ class CNNRLAI(Connect4AI):
             while not done:
                 # RL agent's turn
                 state_np = self.encode_board_np(board)  # For replay
-                state_tensor = torch.from_numpy(state_np).float().to(self.device).half()
+                state_tensor = torch.from_numpy(state_np).float().to(self.device)
 
                 # Choose action for training
                 action = self.select_action_training(board)
@@ -435,8 +440,8 @@ class CNNRLAI(Connect4AI):
                     winner = self.player_id
                     done = True
                     reward += 2.0 # Win reward
-                    max_moves = self.rows * self.cols
-                    remaining_cells = max_moves - moves_played
+                    max_moves = self.rows * self.cols # 42
+                    remaining_cells = max(0, max_moves - moves_played)
                     reward += 0.5 * (remaining_cells / max_moves) # Reward winning with less moves
 
                     next_state_np = self.encode_board_np(board_after_our_move)
@@ -514,7 +519,7 @@ class CNNRLAI(Connect4AI):
                 chunk_losses += 1
             
             # Update reward tracking
-            self.update_reward_tracking(reward)
+            self.update_reward_tracking(episode_reward)
 
             # Decay epsilon
             self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
@@ -555,6 +560,12 @@ class CNNRLAI(Connect4AI):
         
         self.moving_avg_rewards.append(avg)
 
+    def has_nan_weights(self):
+        """
+        Check if any weights in the policy network are NaN.
+        """
+        return any(torch.isnan(p).any() for p in self.policy_network.parameters())
+
     def save_training_history(self, path: str):
         """
         Save training reward history to a .npz file for plotting later
@@ -570,7 +581,11 @@ class CNNRLAI(Connect4AI):
         """
         Save the CNN policy network to specified path
         """
+        if self.has_nan_weights():
+            print("WARNING: Model contains NaN weights — NOT SAVING")
+            return
         torch.save(self.policy_network.state_dict(), path)
+        print(f"Saved model to {path}")
     
     def load_model(self, path: str):
         """

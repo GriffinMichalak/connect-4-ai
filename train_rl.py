@@ -40,7 +40,7 @@ def main():
     games_label = format_games(num_games)
     model_path = f"CNN_models/cnnrl_{mode}_{games_label}_{eps_decay_str}.pt"
     rl.save_model(model_path)
-    
+
     print(f"\nModel saved to: {model_path}\n")
 
 if __name__ == "__main__":
