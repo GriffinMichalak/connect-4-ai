@@ -1,6 +1,5 @@
 """
 Minimax AI without Alpha-Beta Pruning for Connect 4 Game
-This module implements the MinimaxAI class without alpha-beta pruning optimization
 """
 
 from .base_ai import Connect4AI
@@ -21,7 +20,7 @@ class MinimaxAI(Connect4AI):
         valid_columns = self.get_valid_columns(board)
         
         if not valid_columns:
-            return 0  # Should not happen in valid game state
+            return 0  
         
         best_score = float('-inf')
         best_column = valid_columns[0]
@@ -69,7 +68,7 @@ class MinimaxAI(Connect4AI):
         new_board = board.copy()
         
         # Find the lowest empty row in the column
-        for row in range(5, -1, -1):  # Start from bottom row
+        for row in range(5, -1, -1): 
             if new_board[row][col] == 0:
                 new_board[row][col] = player
                 break
