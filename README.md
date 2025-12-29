@@ -53,8 +53,8 @@ Baseline opponent that makes random valid moves for comparison purposes
 ## 🚀 Installation
 ### 1. Clone the Repository
 ```sh
-git clone https://github.com/GriffinMichalak/ai-final-project
-cd ai-final-project
+git clone https://github.com/GriffinMichalak/connect-4-ai
+cd connect-4-ai
 ```
 
 ### 2. Create Virtual Environment
